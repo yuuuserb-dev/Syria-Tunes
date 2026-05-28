@@ -1,0 +1,12 @@
+{
+  "name": "syria-tunes",
+  "version": "1.0.0",
+  "description": "الموقع الرسمي لـ Syria Tunes - متجر ومكتبة ومدونة",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
