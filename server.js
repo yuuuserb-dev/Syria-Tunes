@@ -1,17 +1,24 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer'); // استدعاء أداة رفع الصور
+const fs = require('fs'); // مكتبة النظام لإدارة المجلدات
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// إعدادات قراءة البيانات والنصوص القادمة من الواجهات
+// إعدادات لقراءة البيانات والنصوص القادمة من الواجهات
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // جعل السيرفر يقرأ الملفات العامة من مجلد public
 app.use(express.static(path.join(__dirname, 'public')));
+
+// سحر الحماية: التأكد من أن مجلد uploads موجود، وإذا لم يكن موجوداً يتم إنشاؤه تلقائياً
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir);
+}
 // جعل السيرفر يتيح الوصول للصور المرفوعة داخل مجلد uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadDir));
 
 // مخازن مؤقتة لحفظ البيانات (المقالات والصور)
 let blogPosts = [];
@@ -20,7 +27,7 @@ let galleryImages = [];
 // إعداد أداة Multer لتحديد أين وكيف يتم حفظ الصور المرفوعة
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, 'uploads')); // حفظها في مجلد اسمه uploads
+        cb(null, uploadDir); // حفظها في المجلد الذكي المعرّف بالأعلى
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname)); // تسمية الصورة برقم فريد لعدم التكرار
@@ -59,5 +66,5 @@ app.get('/api/gallery', (req, res) => {
 
 // تشغيل السيرفر
 app.listen(PORT, () => {
-    console.log(`سيرفر Syria Tunes المتطور يعمل بنجاح على بورت ${PORT}`);
+    console.log(`سيرفر Syria Tunes المحدث يعمل بنجاح على بورت ${PORT}`);
 });
